@@ -31,8 +31,8 @@ class BasePipeline(object):
     @abstractmethod
     def sample(self, sample_size: int):
         
-        samples = self.check_done_and_load_sample()
-        
+        #samples = self.check_done_and_load_sample()
+        samples=None
         if samples is None:
 
             guidance_batch_size = self.batch_size  

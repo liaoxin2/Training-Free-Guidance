@@ -3,9 +3,11 @@ import torch
 import numpy as np
 from PIL import Image
 from datasets import load_dataset, concatenate_datasets, load_from_disk, DatasetDict
+from tasks.sst import SST
 from torchvision import transforms
 from diffusers import AudioDiffusionPipeline
 from torchvision.transforms.functional import to_tensor
+from torch.utils.data import Subset
 
 from utils.env_utils import *
 
@@ -55,12 +57,13 @@ def load_audio_dataset(dataset, num_samples=-1):
 def load_image_dataset(dataset, num_samples=-1, target=-1, return_tensor=True, normalize=True):
 
     if dataset == 'cat':
-        images = load_dataset("cats_vs_dogs")
-        images = images.filter(lambda x: x == 0, input_columns='labels')
+        images = load_dataset("google/cats_vs_dogs")
+        images = images.filter(lambda x: x == 0, input_columns='label')
         images = images['train'][:num_samples]['image']
         if not return_tensor:
             images = [images.resize((256, 256)) for images in images]
         tf = transforms.Compose([
+            transforms.Grayscale(num_output_channels=3),
             transforms.Resize(256),
             transforms.CenterCrop(256),
             transforms.ToTensor(),
@@ -132,6 +135,19 @@ def load_image_dataset(dataset, num_samples=-1, target=-1, return_tensor=True, n
         tf = transforms.Compose([
             transforms.ToTensor(),
         ])
+    
+    elif dataset == 'sst':
+        dataset = SST(directory='/workspace/workspace/DDPG/sst_test_20241216.npy')
+        num_items = len(dataset)
+        indices = list(range(num_items))
+        random_state = np.random.get_state()
+        train_indices, test_indices = (
+            indices[: int(num_items * 0.97)],
+            indices[int(num_items * 0.97) :],
+        )
+        test_dataset = dataset
+        dataset = Subset(dataset, train_indices)
+        
 
     else:
         raise NotImplementedError

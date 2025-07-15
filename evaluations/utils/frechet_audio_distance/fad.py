@@ -9,7 +9,7 @@ import os
 import numpy as np
 import soundfile as sf
 import torch
-import laion_clap
+#import laion_clap
 from functools import partial
 
 from multiprocessing.dummy import Pool as ThreadPool

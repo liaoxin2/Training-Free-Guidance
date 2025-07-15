@@ -35,6 +35,7 @@ class Arguments:
 
     # model related
     model_name_or_path: str = field(default='google/ddpm-cifar10-32')
+    pretrained_model_path: str = field(default=None)
 
     # diffusion related
     train_steps: int = field(default=1000)
